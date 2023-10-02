@@ -90,6 +90,7 @@ def add_noise_and_display(array):
 
     for k in range(10):
 
+        st.subheader(f'Sample Number:{k+1}')
         array_copy = array.copy()
         noise = np.zeros((3, 3))
 
@@ -148,23 +149,18 @@ def add_noise_and_display(array):
 
         noise_file='noise_'+str(k)+'.txt'
         centroid_file='centriod_'+str(k)+'.txt'
-        np.savetxt(noise_file,noise,fmt="%.5f" ,delimiter=',')
-        np.savetxt(centroid_file,c[k],fmt="%.5f" ,delimiter=',')
+        #np.savetxt(noise_file,noise,fmt="%.5f" ,delimiter=',')
+        #np.savetxt(centroid_file,c[k],fmt="%.5f" ,delimiter=',')
 
     plt.figure(figsize=(8, 6))
-    plt.plot(range(1,11), dell, marker='o', linestyle='-', color='blue')
-    plt.xlabel('sample_number')
-    plt.ylabel('delL')
-    plt.title('delL vs sample_number')
+    plt.plot(range(1, 11), dell, marker='o', linestyle='-', color='blue', label='delL')
+    plt.plot(range(1, 11), delp, marker='o', linestyle='-', color='green', label='delP')
+    plt.xlabel('Sample Number')
+    plt.ylabel('delL / delP')
+    plt.title('delL and delP vs Sample Number')
+    plt.legend()
     st.pyplot(plt)
     
-    plt.figure(figsize=(8, 6))
-    plt.plot(range(1,11), delp, marker='o', linestyle='-', color='blue')
-    plt.xlabel('sample_number')
-    plt.ylabel('delP')
-    plt.title('delP vs sample_number')
-    st.pyplot(plt)
-        
     
 clicked = st.sidebar.button('Add Noise and find centriod')
 
@@ -175,17 +171,20 @@ def modify_corner(array):
 
     location=(1,1)
     centroid=display_centroid(array,0)
+    st.title(f'Modified location:{(location[0]+1,location[1]+1)}')
 
     c=[]
     delp=[]
     dell=[]
+    intensity=[]
 
     for k in range(10):
 
-        st.title(f'Modified location:{(location[0]+1,location[1]+1)}')
+        st.subheader(f'Sample Number:{k+1}')
         array_copy = array.copy()
         i, j = location
         array_copy[i, j] = np.random.randint(0, 4096)  # Random value between 0 and 4095
+        intensity.append(array_copy[1,1])
 
         c.append(find_centroid(array_copy))
         delp.append(abs(c[k][0]-centroid[0]))
@@ -217,19 +216,18 @@ def modify_corner(array):
         st.pyplot(plt)
 
     plt.figure(figsize=(8, 6))
-    plt.plot(range(1,11), dell, marker='o', linestyle='-', color='blue')
-    plt.xlabel('sample_number')
-    plt.ylabel('delL')
-    plt.title('delL vs sample_number')
+    plt.plot(range(1, 11), dell, marker='o', linestyle='-', color='blue', label='delL')
+    plt.plot(range(1, 11), delp, marker='o', linestyle='-', color='green', label='delP')
+    plt.xlabel('Sample Number')
+    plt.ylabel('delL / delP')
+    plt.title('delL and delP vs Sample Number')
+    plt.legend()
+
+    # Annotate the points with intensity values
+    for i, txt in enumerate(intensity):
+        plt.annotate(f'Intensity: {txt}', (i + 1, dell[i]), textcoords="offset points", xytext=(0, 10), ha='center', fontsize=8, color='red')
+
     st.pyplot(plt)
-    
-    plt.figure(figsize=(8, 6))
-    plt.plot(range(1,11), delp, marker='o', linestyle='-', color='blue')
-    plt.xlabel('sample_number')
-    plt.ylabel('delP')
-    plt.title('delP vs sample_number')
-    st.pyplot(plt)
-    
 
 #Button to modify corners and display graph
 clicked = st.sidebar.button('Modify corners and find centriod')
@@ -241,17 +239,20 @@ def modify_corner_high(array):
 
     location=(1,1)
     centroid=display_centroid(array,0)
+    st.title(f'Modified location:{(location[0]+1,location[1]+1)}')
 
     c=[]
     delp=[]
     dell=[]
+    intensity=[]
 
     for k in range(10):
 
-        st.title(f'Modified location:{(location[0]+1,location[1]+1)}')
+        st.subheader(f'Sample Number:{k+1}')
         array_copy = array.copy()
         i, j = location
         array_copy[i, j] = np.random.randint(3000, 4096)  # Random value between 0 and 4095
+        intensity.append(array_copy[1,1])
 
         c.append(find_centroid(array_copy))
         delp.append(abs(c[k][0]-centroid[0]))
@@ -283,19 +284,19 @@ def modify_corner_high(array):
         st.pyplot(plt)
 
     plt.figure(figsize=(8, 6))
-    plt.plot(range(1,11), dell, marker='o', linestyle='-', color='blue')
-    plt.xlabel('sample_number')
-    plt.ylabel('delL')
-    plt.title('delL vs sample_number')
+    plt.plot(range(1, 11), dell, marker='o', linestyle='-', color='blue', label='delL')
+    plt.plot(range(1, 11), delp, marker='o', linestyle='-', color='green', label='delP')
+    plt.xlabel('Sample Number')
+    plt.ylabel('delL / delP')
+    plt.title('delL and delP vs Sample Number')
+    plt.legend()
+
+    # Annotate the points with intensity values
+    for i, txt in enumerate(intensity):
+        plt.annotate(f'Intensity: {txt}', (i + 1, dell[i]), textcoords="offset points", xytext=(0, 10), ha='center', fontsize=8, color='red')
+
     st.pyplot(plt)
-    
-    plt.figure(figsize=(8, 6))
-    plt.plot(range(1,11), delp, marker='o', linestyle='-', color='blue')
-    plt.xlabel('sample_number')
-    plt.ylabel('delP')
-    plt.title('delP vs sample_number')
-    st.pyplot(plt)
-    
+
 
 #Button to modify corners and display graph
 clicked = st.sidebar.button('Modify corners(3000-4095) and find centriod')
@@ -354,23 +355,17 @@ def vary_position(array,a,b):
 
     sorted_dell = [x for _, x in sorted(zip(range(len(dell)), dell), reverse=True)]
     sorted_locations = [x for _, x in sorted(zip(range(len(locations)), locations), reverse=True)]
-
-    plt.figure(figsize=(8, 6))
-    plt.plot([location[0] for location in sorted_locations], sorted_dell, marker='o', linestyle='-', color='blue')
-    plt.xlabel('Position')
-    plt.ylabel('delL')
-    plt.title('delL vs Position')
-    st.pyplot(plt)
-
     sorted_delp = [x for _, x in sorted(zip(range(len(delp)), delp), reverse=True)]
 
     plt.figure(figsize=(8, 6))
-    plt.plot([location[0] for location in sorted_locations], sorted_delp, marker='o', linestyle='-', color='blue')
+    plt.plot([location[0] for location in sorted_locations], sorted_dell, marker='o', linestyle='-', color='red',label='delL')
+    plt.plot([location[0] for location in sorted_locations], sorted_delp, marker='o', linestyle='-', color='blue',label='delP')
     plt.xlabel('Position')
-    plt.ylabel('delP')
-    plt.title('delP vs Position')
+    plt.ylabel('delL/delP')
+    plt.title(f'delL and delP vs Position, Intensity:{value}')
+    plt.legend()
     st.pyplot(plt)
-
+    
 
 st.sidebar.subheader('Varying position keeping intensity fixed')
 
@@ -438,19 +433,14 @@ def gradient_generation(array,a,b):
         st.pyplot(plt)
 
     plt.figure(figsize=(8, 6))
-    plt.plot(range(1,11), dell, marker='o', linestyle='-', color='blue')
+    plt.plot(range(1,11), dell, marker='o', linestyle='-', color='blue',label="delL")
+    plt.plot(range(1,11), delp, marker='o', linestyle='-', color='red',label='delP')
     plt.xlabel('sample_number')
-    plt.ylabel('delL')
-    plt.title('delL vs sample_number')
+    plt.ylabel('delL/delP')
+    plt.title('delL and delP vs sample_number')
+    plt.legend()
     st.pyplot(plt)
     
-    plt.figure(figsize=(8, 6))
-    plt.plot(range(1,11), delp, marker='o', linestyle='-', color='blue')
-    plt.xlabel('sample_number')
-    plt.ylabel('delP')
-    plt.title('delP vs sample_number')
-    st.pyplot(plt)
-
 st.sidebar.subheader('Gradient Generation')
 
 clicked = st.sidebar.button('s1:0-1000')
@@ -519,19 +509,14 @@ def gradient_varying_blocks(array,a,b):
         k=k+1
 
     plt.figure(figsize=(8, 6))
-    plt.plot(range(len(locations)), dell, marker='o', linestyle='-', color='blue')
+    plt.plot(range(len(locations)), dell, marker='o', linestyle='-', color='blue',label='delL')
+    plt.plot(range(len(locations)), delp, marker='o', linestyle='-', color='red',label='delP')
     plt.xlabel('sample_number')
-    plt.ylabel('delL')
-    plt.title('delL vs sample_number')
+    plt.ylabel('delL/delP')
+    plt.title('delL/delP vs sample_number')
+    plt.legend()
     st.pyplot(plt)
     
-    plt.figure(figsize=(8, 6))
-    plt.plot(range(len(locations)), delp, marker='o', linestyle='-', color='blue')
-    plt.xlabel('sample_number')
-    plt.ylabel('delP')
-    plt.title('delP vs sample_number')
-    st.pyplot(plt)
-
 st.sidebar.subheader('Gradient Energy in varying blocks')
 
 clicked = st.sidebar.button('1:0-1000')
